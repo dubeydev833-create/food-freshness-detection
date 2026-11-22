@@ -98,7 +98,16 @@ class FoodFreshnessInferenceEngine:
         Args:
             model_path: File path to Member 1's trained .keras or .h5 model.
             target_size: Expected input image dimensions (height, width).
-            normalization_mode: Pixel normalization mode ('rescale', 'centered', etc.).
+            normalization_mode: Pixel normalization mode:
+                - 'rescale' (default): Scales [0, 255] -> [0.0, 1.0] (x / 255.0).
+                  Standard default for baseline CNNs trained on normalized floats.
+                - 'centered': Scales [0, 255] -> [-1.0, 1.0] ((x / 127.5) - 1.0).
+                  REQUIRED if Member 1 used a MobileNetV2 backbone trained with
+                  tf.keras.applications.mobilenet_v2.preprocess_input.
+                - 'raw': Leaves pixel values as float32 in [0.0, 255.0].
+                  REQUIRED if Member 1 embedded a `layers.Rescaling(1./255)` layer
+                  inside the Keras model architecture to prevent double normalization.
+                - 'standardize': Applies ImageNet RGB channel mean and standard deviation.
             compile_model: Whether to compile the model on load (False for pure inference).
 
         Raises:
@@ -258,17 +267,21 @@ class FoodFreshnessInferenceEngine:
         self,
         image_input: Any,
         category: str = "Fruits",
-        metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Run complete end-to-end inference pipeline on an uploaded food image.
+        """Run complete end-to-end inference on an uploaded food image.
 
         Preprocesses the raw image, runs model inference, and packages
         the output according to the standard contract.
 
+        Note:
+            Environmental and storage metadata (e.g. temperature, storage condition,
+            duration) is intentionally managed at the pipeline orchestration layer
+            via `run_freshness_analysis()` to keep model inference strictly decoupled
+            from auxiliary telemetry.
+
         Args:
             image_input: File path, bytes, file stream, or array.
             category: Food category ('Fruits', 'Vegetables', 'Meat', 'Dairy').
-            metadata: Optional storage and environmental metadata dictionary.
 
         Returns:
             Dict[str, Any]: FreshCheck AI standard contract dictionary.

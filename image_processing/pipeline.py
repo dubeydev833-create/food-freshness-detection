@@ -50,9 +50,13 @@ def run_freshness_analysis(
 
     Returns:
         Dict[str, Any]: Dictionary containing:
-            - 'prediction': Exact standard contract output from the trained model.
+            - 'predicted_class': Predicted freshness class ('Fresh', 'Moderate', 'Spoiled').
+            - 'confidence': Model confidence score (0.0 to 1.0).
+            - 'probabilities': Dictionary mapping all classes to probabilities.
+            - 'category': Canonical food category.
             - 'metadata': Validated metadata (returned separately per Phase 5).
             - 'visual_features': Optical feature metrics (when requested).
+            - 'prediction': Exact standard contract output (retained for backward compatibility).
     """
     # 1. Preprocess image
     tensor_input, rgb_clean = preprocess_image(
@@ -79,7 +83,13 @@ def run_freshness_analysis(
         visual_features = extract_visual_features(rgb_clean)
 
     return {
-        "prediction": prediction,
+        # Root-level contract fields for direct backend serialization
+        "predicted_class": prediction["predicted_class"],
+        "confidence": prediction["confidence"],
+        "probabilities": prediction["probabilities"],
+        "category": prediction["category"],
         "metadata": metadata,
         "visual_features": visual_features,
+        # Retained nested prediction for full backward compatibility
+        "prediction": prediction,
     }

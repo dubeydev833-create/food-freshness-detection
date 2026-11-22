@@ -59,10 +59,10 @@ Every inference response returned to Member 3's FastAPI backend conforms to this
 - **Model Format**: Save your trained model in modern `.keras` format (or legacy `.h5`).
 - **Input Dimensions**: Default is `(224, 224, 3)`. You can specify custom dimensions via `target_size=(height, width)`.
 - **Pixel Normalization**: Configurable via `normalization_mode`:
-  - `"rescale"`: `[0.0, 1.0]` ($x / 255.0$) — *Default*
-  - `"centered"`: `[-1.0, 1.0]` ($(x / 127.5) - 1.0$)
-  - `"standardize"`: ImageNet channel mean & std
-  - `"raw"`: `[0.0, 255.0]` if your model includes an internal `keras.layers.Rescaling` layer.
+  - `"rescale"`: `[0.0, 1.0]` ($x / 255.0$) — *Current Project Default* (standard for models trained on normalized floats).
+  - `"centered"`: `[-1.0, 1.0]` ($(x / 127.5) - 1.0$) — **REQUIRED** if you use a MobileNetV2 or Inception backbone trained with `tf.keras.applications.mobilenet_v2.preprocess_input`.
+  - `"raw"`: `[0.0, 255.0]` `float32` — **REQUIRED** if you embedded an internal `keras.layers.Rescaling(1./255)` layer inside your Keras model architecture to prevent double normalization.
+  - `"standardize"`: Applies ImageNet RGB channel mean `[0.485, 0.456, 0.406]` & std `[0.229, 0.224, 0.225]`.
 - **Output Layer**: 3 softmax units corresponding strictly to `["Fresh", "Moderate", "Spoiled"]`.
 
 ### For Member 3 (Backend & API Integration)
@@ -74,7 +74,7 @@ Every inference response returned to Member 3's FastAPI backend conforms to this
    ```
 2. **Execute inference on uploaded file bytes**:
    ```python
-   # Direct standard contract output
+   # Direct standard contract output (predicted_class, confidence, probabilities, category)
    result = engine.predict(file_bytes, category="Fruits")
 
    # Or execute the full orchestrated pipeline with metadata:
@@ -89,6 +89,10 @@ Every inference response returned to Member 3's FastAPI backend conforms to this
        storage_duration_days=2.0,
        include_visual_features=True,
    )
+   # response provides root-level contract fields:
+   # response["predicted_class"], response["confidence"], response["probabilities"], response["category"]
+   # along with decoupled telemetry: response["metadata"], response["visual_features"]
+   # and backward-compatible nested dictionary: response["prediction"]
    ```
 3. **Handle Custom Exceptions**:
    - `ImageFormatError`: When user uploads unsupported formats (e.g. GIF, PDF).

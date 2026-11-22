@@ -147,3 +147,56 @@ class TestEndToEndPipeline:
         assert "brightness" in vf
         assert "contrast" in vf
         assert "texture" in vf
+
+    def test_pipeline_root_and_nested_equivalence(
+        self,
+        trained_keras_model_file: Path,
+        sample_jpeg_file: Path,
+    ):
+        """Verify root-level fields, nested backward compatibility, and metadata separation."""
+        engine = FoodFreshnessInferenceEngine(model_path=trained_keras_model_file)
+
+        # Run analysis with metadata
+        response = run_freshness_analysis(
+            image_input=sample_jpeg_file,
+            category="Fruits",
+            engine=engine,
+            temperature_celsius=5.0,
+            storage_condition="Refrigerated",
+            storage_duration_days=3.5,
+            include_visual_features=False,
+        )
+
+        # 1. Root-level prediction fields exist
+        assert "predicted_class" in response
+        assert "confidence" in response
+        assert "probabilities" in response
+        assert "category" in response
+        assert "metadata" in response
+        assert "visual_features" in response
+
+        # 2. Nested prediction remains available
+        assert "prediction" in response
+        nested_pred = response["prediction"]
+
+        # 3. Root-level and nested predictions contain identical values
+        assert response["predicted_class"] == nested_pred["predicted_class"]
+        assert response["confidence"] == nested_pred["confidence"]
+        assert response["probabilities"] == nested_pred["probabilities"]
+        assert response["category"] == nested_pred["category"]
+
+        # 4. Metadata remains strictly separate from image prediction
+        # Running another request with different temperature produces identical image probabilities
+        response_different_temp = run_freshness_analysis(
+            image_input=sample_jpeg_file,
+            category="Fruits",
+            engine=engine,
+            temperature_celsius=25.0,  # Elevated temperature
+            storage_condition="Room Temperature",
+        )
+        assert response["probabilities"] == response_different_temp["probabilities"]
+        assert response["confidence"] == response_different_temp["confidence"]
+        assert response["predicted_class"] == response_different_temp["predicted_class"]
+        # Metadata itself reflects the differing inputs separately
+        assert response["metadata"]["temperature_celsius"] == 5.0
+        assert response_different_temp["metadata"]["temperature_celsius"] == 25.0
