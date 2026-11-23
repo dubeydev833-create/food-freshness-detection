@@ -4,7 +4,15 @@ Full frontend application orchestrating the Home Dashboard, Food Analyzer,
 Prediction Results display, Historical Analytics, and FastAPI backend integration.
 """
 
+import os
+import sys
 from pathlib import Path
+
+# Ensure project root is in sys.path so 'frontend' package is always resolvable
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from typing import Any, Dict, List, Optional
 from PIL import Image
 import streamlit as st
