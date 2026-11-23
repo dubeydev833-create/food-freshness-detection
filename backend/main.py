@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
 from backend.database import init_db
 from backend.routes.health import router as health_router
+from backend.routes.predict import router as predict_router
 
 # Configure root logging
 logging.basicConfig(
@@ -70,8 +71,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount health routes
+# Mount routes
 app.include_router(health_router)
+app.include_router(predict_router)
 
 
 if __name__ == "__main__":
