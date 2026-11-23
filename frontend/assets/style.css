@@ -1,0 +1,341 @@
+/* FreshCheck AI — Modern Design System Stylesheet */
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --fc-primary: #10B981;
+    --fc-primary-hover: #059669;
+    --fc-primary-dark: #047857;
+    --fc-primary-light: #ECFDF5;
+    
+    --fc-moderate: #F59E0B;
+    --fc-moderate-light: #FFFBEB;
+    --fc-moderate-dark: #B45309;
+    
+    --fc-spoiled: #EF4444;
+    --fc-spoiled-light: #FEF2F2;
+    --fc-spoiled-dark: #B91C1C;
+    
+    --fc-bg: #F8FAFC;
+    --fc-card-bg: #FFFFFF;
+    --fc-border: #E2E8F0;
+    --fc-border-hover: #CBD5E1;
+    
+    --fc-text-dark: #0F172A;
+    --fc-text-body: #334155;
+    --fc-text-muted: #64748B;
+    
+    --fc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --fc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --fc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    --fc-radius-sm: 8px;
+    --fc-radius-md: 12px;
+    --fc-radius-lg: 16px;
+}
+
+/* Global Font Override */
+html, body, [class*="css"] {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--fc-text-body);
+}
+
+/* Header & Hero Branding */
+.fc-hero {
+    background: linear-gradient(135deg, #064E3B 0%, #065F46 50%, #047857 100%);
+    border-radius: var(--fc-radius-lg);
+    padding: 2.2rem 2.4rem;
+    color: #FFFFFF;
+    box-shadow: 0 12px 24px -6px rgba(6, 78, 59, 0.25);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.fc-hero::before {
+    content: "";
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.fc-hero h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin: 0 0 0.5rem 0;
+    color: #FFFFFF !important;
+}
+
+.fc-hero p {
+    font-size: 1.05rem;
+    color: #D1FAE5;
+    margin: 0;
+    max-width: 680px;
+    line-height: 1.5;
+}
+
+/* Stat Cards */
+.fc-stat-card {
+    background: var(--fc-card-bg);
+    border: 1px solid var(--fc-border);
+    border-radius: var(--fc-radius-md);
+    padding: 1.25rem 1.4rem;
+    box-shadow: var(--fc-shadow-md);
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.fc-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--fc-shadow-lg);
+    border-color: var(--fc-border-hover);
+}
+
+.fc-stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+
+.fc-stat-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fc-text-muted);
+}
+
+.fc-stat-icon {
+    font-size: 1.3rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--fc-bg);
+}
+
+.fc-stat-val {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--fc-text-dark);
+    line-height: 1.1;
+    margin-bottom: 0.35rem;
+}
+
+.fc-stat-sub {
+    font-size: 0.8rem;
+    color: var(--fc-text-muted);
+    font-weight: 500;
+}
+
+/* Card Accent Borders */
+.fc-card-fresh { border-top: 4px solid var(--fc-primary); }
+.fc-card-moderate { border-top: 4px solid var(--fc-moderate); }
+.fc-card-spoiled { border-top: 4px solid var(--fc-spoiled); }
+.fc-card-total { border-top: 4px solid #3B82F6; }
+
+/* Status Badges */
+.fc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.fc-badge-fresh {
+    background: var(--fc-primary-light);
+    color: var(--fc-primary-dark);
+    border: 1px solid #A7F3D0;
+}
+
+.fc-badge-moderate {
+    background: var(--fc-moderate-light);
+    color: var(--fc-moderate-dark);
+    border: 1px solid #FDE68A;
+}
+
+.fc-badge-spoiled {
+    background: var(--fc-spoiled-light);
+    color: var(--fc-spoiled-dark);
+    border: 1px solid #FECACA;
+}
+
+/* Status Pill for Backend Connectivity */
+.fc-conn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.fc-conn-online {
+    background: #ECFDF5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+}
+
+.fc-conn-offline {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+.fc-conn-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.fc-dot-online {
+    background-color: #10B981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.fc-dot-offline {
+    background-color: #EF4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+}
+
+/* Modern Card Container */
+.fc-card {
+    background: var(--fc-card-bg);
+    border: 1px solid var(--fc-border);
+    border-radius: var(--fc-radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--fc-shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+/* Results Hero Box */
+.fc-result-banner {
+    border-radius: var(--fc-radius-lg);
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid transparent;
+}
+
+.fc-result-fresh {
+    background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+    border-color: #A7F3D0;
+}
+
+.fc-result-moderate {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+    border-color: #FDE68A;
+}
+
+.fc-result-spoiled {
+    background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+    border-color: #FECACA;
+}
+
+/* Food Safety Disclaimer Banner */
+.fc-disclaimer-card {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-left: 5px solid #F59E0B;
+    border-radius: var(--fc-radius-md);
+    padding: 1.1rem 1.4rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #78350F;
+    margin: 1.5rem 0;
+}
+
+/* Empty State Card */
+.fc-empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: #FFFFFF;
+    border: 2px dashed #CBD5E1;
+    border-radius: var(--fc-radius-lg);
+    margin: 1.5rem 0;
+}
+
+.fc-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+}
+
+.fc-empty-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--fc-text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.fc-empty-desc {
+    font-size: 0.92rem;
+    color: var(--fc-text-muted);
+    max-width: 440px;
+    margin: 0 auto 1.2rem auto;
+}
+
+/* Recommendation Box */
+.fc-recommendation-box {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: var(--fc-radius-md);
+    padding: 1.25rem 1.4rem;
+    margin: 1rem 0;
+}
+
+.fc-rec-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.92rem;
+    color: var(--fc-text-body);
+}
+
+.fc-rec-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Streamlit Native Tweaks */
+div.stButton > button:first-child {
+    background-color: var(--fc-primary);
+    color: #FFFFFF;
+    font-weight: 600;
+    border-radius: var(--fc-radius-sm);
+    border: none;
+    padding: 0.55rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+div.stButton > button:first-child:hover {
+    background-color: var(--fc-primary-hover);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35);
+    color: #FFFFFF;
+}
+
+/* Sidebar Custom Styling */
+section[data-testid="stSidebar"] {
+    background-color: #FFFFFF;
+    border-right: 1px solid var(--fc-border);
+}
+
+section[data-testid="stSidebar"] .block-container {
+    padding-top: 2rem;
+}
