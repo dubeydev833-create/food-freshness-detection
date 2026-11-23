@@ -24,3 +24,9 @@ Thumbs.db
 *.keras
 *.h5
 !tests/fixtures/*.keras
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+backend/freshcheck.db
