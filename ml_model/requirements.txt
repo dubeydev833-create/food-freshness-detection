@@ -1,0 +1,30 @@
+# FreshCheck AI — ML Model Requirements
+# Member 1: AI/ML Model Development
+
+# Core ML framework
+tensorflow>=2.13.0
+
+# Data processing
+numpy>=1.24.0
+pandas>=1.5.0
+Pillow>=9.4.0
+scikit-learn>=1.2.0
+
+# Visualisation
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Dataset preparation utilities
+tqdm>=4.65.0
+
+# Near-duplicate detection (optional — enables perceptual hash check in prepare_dataset.py)
+imagehash>=4.3.1
+
+# Testing
+pytest>=7.3.0
+pytest-cov>=4.0.0
+
+# Note: Python 3.10–3.12 is recommended.
+# TensorFlow 2.13+ supports Python 3.8–3.11.
+# TensorFlow 2.16+ supports Python 3.9–3.12.
+# Check https://www.tensorflow.org/install for the latest compatibility matrix.

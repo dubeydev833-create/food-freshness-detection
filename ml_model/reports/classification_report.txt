@@ -1,0 +1,26 @@
+FreshCheck AI - Classification Report
+======================================================================
+STATUS: PLACEHOLDER - Training not yet executed on this machine.
+======================================================================
+This file will be OVERWRITTEN by the real classification report when
+you run the following command after training the model:
+
+    python ml_model/evaluate.py --model-path ml_model/model/freshness_model.keras
+
+IMPORTANT:
+  - Do NOT use the numbers below as real metrics.
+  - The model must be trained first (see ml_model/README.md).
+  - Real metrics are computed on the actual test set only.
+
+HOW TO GET REAL RESULTS:
+  Step 1: Download datasets (see ml_model/dataset/dataset_sources.md)
+  Step 2: python ml_model/prepare_dataset.py --raw-dir ml_model/dataset/raw --out-dir ml_model/dataset/processed
+  Step 3: python ml_model/train.py --data-dir ml_model/dataset/processed
+  Step 4: python ml_model/evaluate.py --data-dir ml_model/dataset/processed
+
+KNOWN LIMITATIONS (independent of training results):
+  - Moderate class data comes from Meat (Half_Fresh label) only.
+    Moderate for Fruits and Vegetables is not genuinely represented.
+  - Dairy is not supported (no freshness-labelled dataset found).
+  - If only Fresh+Spoiled data is used, model will be 2-class (not 3).
+======================================================================

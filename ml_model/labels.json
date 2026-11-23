@@ -1,0 +1,93 @@
+{
+  "class_names": ["Fresh", "Moderate", "Spoiled"],
+  "class_indices": {
+    "Fresh": 0,
+    "Moderate": 1,
+    "Spoiled": 2
+  },
+  "num_classes": 3,
+  "model_contract": {
+    "input_shape": [224, 224, 3],
+    "input_dtype": "float32",
+    "normalization": "centered",
+    "normalization_formula": "(pixel / 127.5) - 1.0",
+    "normalization_range": "[-1.0, 1.0]",
+    "output_activation": "softmax",
+    "output_shape": [3],
+    "output_order": ["Fresh", "Moderate", "Spoiled"],
+    "output_description": "Softmax probabilities summing to 1.0 in class order: index 0=Fresh, index 1=Moderate, index 2=Spoiled"
+  },
+  "food_categories_in_training": {
+    "Fruits": {
+      "supported": true,
+      "freshness_classes": ["Fresh", "Spoiled"],
+      "moderate_available": false,
+      "dataset": "swoyam2609/fresh-and-stale-classification",
+      "note": "Only binary Fresh/Spoiled labels exist in this dataset. No genuine Moderate class available for Fruits."
+    },
+    "Vegetables": {
+      "supported": true,
+      "freshness_classes": ["Fresh", "Spoiled"],
+      "moderate_available": false,
+      "dataset": "swoyam2609/fresh-and-stale-classification",
+      "note": "Only binary Fresh/Spoiled labels exist in this dataset. No genuine Moderate class available for Vegetables."
+    },
+    "Meat": {
+      "supported": true,
+      "freshness_classes": ["Fresh", "Moderate", "Spoiled"],
+      "moderate_available": true,
+      "dataset": "vinayakshanawad/meat-quality-assessment",
+      "note": "Three-class dataset. Original label 'Half_Fresh' is mapped to 'Moderate'. This is the primary source for the Moderate class."
+    },
+    "Dairy": {
+      "supported": false,
+      "freshness_classes": [],
+      "moderate_available": false,
+      "dataset": null,
+      "note": "No suitable public freshness-labelled dairy dataset found. Dairy is NOT supported in the current model."
+    }
+  },
+  "moderate_class_source": {
+    "category": "Meat",
+    "original_label": "Half_Fresh",
+    "mapped_to": "Moderate",
+    "is_genuine_label": true,
+    "note": "Moderate class is populated from genuine 'Half_Fresh' meat images. No synthetic augmentation is used to create any class."
+  },
+  "honest_limitations": [
+    "Moderate class images come exclusively from Meat data (Half_Fresh label). The Moderate class does not represent Moderate Fruits or Moderate Vegetables.",
+    "Dairy category is not supported — no public freshness-labelled dairy dataset was found.",
+    "Fruits and Vegetables training data is binary (Fresh/Spoiled). The model may not reliably classify moderately fresh fruits or vegetables.",
+    "If Fruits or Vegetables are submitted for inference and classified as Moderate, that prediction is based on meat-derived Moderate features."
+  ],
+  "dataset_sources": [
+    {
+      "name": "Fresh and Stale Classification",
+      "kaggle_id": "swoyam2609/fresh-and-stale-classification",
+      "license": "CC0 1.0 Public Domain",
+      "categories": ["Fruits", "Vegetables"],
+      "original_labels": ["fresh_<item>", "stale_<item>"],
+      "mapped_to": ["Fresh", "Spoiled"],
+      "image_count_approx": 10000
+    },
+    {
+      "name": "Meat Freshness Image Dataset",
+      "kaggle_id": "vinayakshanawad/meat-quality-assessment",
+      "license": "CC BY 4.0",
+      "categories": ["Meat"],
+      "original_labels": ["Fresh", "Half_Fresh", "Spoiled"],
+      "mapped_to": ["Fresh", "Moderate", "Spoiled"],
+      "image_count_approx": 2266
+    }
+  ],
+  "rejected_datasets": [
+    {
+      "name": "Fruits 360",
+      "kaggle_id": "moltean/fruits",
+      "reason": "Food-type recognition dataset, not freshness dataset. All images are fresh fruit on white backgrounds. Labels are fruit variety, not freshness state."
+    }
+  ],
+  "version": "2.0.0",
+  "created_by": "Member 1 — FreshCheck AI",
+  "last_updated": "2026-11-23"
+}
