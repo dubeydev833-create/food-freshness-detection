@@ -95,7 +95,7 @@ async def image_format_exception_handler(request: Request, exc: ImageFormatError
 @app.exception_handler(ImageSizeError)
 async def image_size_exception_handler(request: Request, exc: ImageSizeError):
     return JSONResponse(
-        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+        status_code=getattr(status, "HTTP_413_CONTENT_TOO_LARGE", 413),
         content={"success": False, "error": "ImageSizeExceeded", "detail": str(exc)},
     )
 

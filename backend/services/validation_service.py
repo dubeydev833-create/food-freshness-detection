@@ -78,7 +78,7 @@ def validate_image_file(
         actual_mb = len(contents) / (1024 * 1024)
         logger.warning(f"Rejected upload: Size {actual_mb:.2f}MB exceeds {max_mb}MB limit")
         raise HTTPException(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            status_code=getattr(status, "HTTP_413_CONTENT_TOO_LARGE", 413),
             detail=(
                 f"Image file exceeds maximum allowable size of {max_mb:.0f} MB "
                 f"(received {actual_mb:.2f} MB)."
