@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from backend.config import settings
 from backend.database import init_db
 from backend.routes.health import router as health_router
+from backend.routes.history import router as history_router
 from backend.routes.predict import router as predict_router
 from image_processing.exceptions import (
     FreshCheckError,
@@ -142,6 +143,7 @@ async def model_inference_exception_handler(request: Request, exc: ModelInferenc
 # Mount routes
 app.include_router(health_router)
 app.include_router(predict_router)
+app.include_router(history_router)
 
 
 if __name__ == "__main__":

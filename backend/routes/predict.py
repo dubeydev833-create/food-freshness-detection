@@ -1,6 +1,7 @@
 """Prediction API route for FreshCheck AI (Phase 2, 3, & 4)."""
 
 import logging
+import sqlite3
 from typing import Optional
 from fastapi import (
     APIRouter,
@@ -13,11 +14,13 @@ from fastapi import (
 )
 
 from backend.config import settings
+from backend.database import get_db
 from backend.schemas.prediction import (
     FoodMetadataResponse,
     PredictionResponse,
     Probabilities,
 )
+from backend.services.history_service import save_prediction
 from backend.services.inference_service import (
     InferenceService,
     get_inference_service,
@@ -120,6 +123,7 @@ async def predict_freshness(
         description="Optional storage duration (e.g. '2 days', '24 hours')",
     ),
     inference_service: InferenceService = Depends(get_inference_service),
+    db: sqlite3.Connection = Depends(get_db),
 ) -> PredictionResponse:
     """Predict food freshness from uploaded image and optional metadata with comprehensive validation."""
     # 1. Read uploaded file content
@@ -197,6 +201,22 @@ async def predict_freshness(
         Moderate=probs.get("Moderate", 0.0),
         Spoiled=probs.get("Spoiled", 0.0),
     )
+
+    # 8. Persist to SQLite prediction history (Phase 5) - images are NOT stored
+    try:
+        save_prediction(
+            conn=db,
+            category=analysis_result["category"],
+            predicted_class=analysis_result["predicted_class"],
+            confidence=analysis_result["confidence"],
+            temperature_celsius=metadata_response.temperature_celsius,
+            storage_condition=metadata_response.storage_condition,
+            storage_duration=storage_duration,
+            message="Image-based freshness prediction completed.",
+        )
+    except Exception as exc:
+        # Prediction succeeded; log history failure without breaking user response
+        logger.warning(f"Failed to record prediction in history: {exc}")
 
     return PredictionResponse(
         success=True,

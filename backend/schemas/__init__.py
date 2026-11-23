@@ -1,6 +1,11 @@
 """Pydantic schemas for FreshCheck AI API."""
 
 from backend.schemas.health import HealthResponse, RootResponse
+from backend.schemas.history import (
+    ClearHistoryResponse,
+    HistoryListResponse,
+    HistoryRecord,
+)
 from backend.schemas.prediction import (
     FoodMetadataResponse,
     PredictionResponse,
@@ -13,5 +18,8 @@ __all__ = [
     "PredictionResponse",
     "Probabilities",
     "FoodMetadataResponse",
+    "HistoryRecord",
+    "HistoryListResponse",
+    "ClearHistoryResponse",
 ]
 

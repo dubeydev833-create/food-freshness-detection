@@ -24,7 +24,36 @@ def get_db_connection(db_path: Path = settings.DB_PATH) -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode = WAL;")  # High concurrency WAL mode
     conn.execute("PRAGMA foreign_keys = ON;")
+    # Ensure tables exist
+    _ensure_tables_created(conn)
     return conn
+
+
+def _ensure_tables_created(conn: sqlite3.Connection) -> None:
+    """Ensure core schema exists on connection."""
+    with conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS prediction_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                prediction_id TEXT UNIQUE NOT NULL,
+                timestamp TEXT NOT NULL,
+                category TEXT NOT NULL,
+                predicted_class TEXT NOT NULL,
+                confidence REAL NOT NULL,
+                temperature_celsius REAL,
+                storage_condition TEXT,
+                storage_duration TEXT,
+                message TEXT
+            );
+        """)
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_predictions_timestamp 
+            ON prediction_history (timestamp DESC);
+        """)
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_predictions_category 
+            ON prediction_history (category);
+        """)
 
 
 def get_db() -> Generator[sqlite3.Connection, None, None]:

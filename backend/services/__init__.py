@@ -1,5 +1,10 @@
 """Service layer packages for FreshCheck AI backend."""
 
+from backend.services.history_service import (
+    clear_prediction_history,
+    get_prediction_history,
+    save_prediction,
+)
 from backend.services.inference_service import InferenceService, get_inference_service
 from backend.services.validation_service import (
     validate_category_input,
@@ -13,5 +18,8 @@ __all__ = [
     "validate_image_file",
     "validate_category_input",
     "validate_temperature_input",
+    "save_prediction",
+    "get_prediction_history",
+    "clear_prediction_history",
 ]
 
