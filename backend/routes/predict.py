@@ -1,4 +1,4 @@
-"""Prediction API route for FreshCheck AI (Phase 2 & Phase 3)."""
+"""Prediction API route for FreshCheck AI (Phase 2, 3, & 4)."""
 
 import logging
 from typing import Optional
@@ -21,6 +21,11 @@ from backend.schemas.prediction import (
 from backend.services.inference_service import (
     InferenceService,
     get_inference_service,
+)
+from backend.services.validation_service import (
+    validate_category_input,
+    validate_image_file,
+    validate_temperature_input,
 )
 from image_processing.exceptions import (
     ImageFormatError,
@@ -52,8 +57,19 @@ def parse_optional_duration(duration_str: Optional[str]) -> Optional[float]:
     try:
         parts = clean.split()
         if len(parts) == 1:
-            return float(parts[0])
+            val = float(parts[0])
+            if val < 0.0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Storage duration cannot be negative: {val}.",
+                )
+            return val
         val = float(parts[0])
+        if val < 0.0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Storage duration cannot be negative: {val}.",
+            )
         unit = parts[1]
         if "hour" in unit:
             return round(val / 24.0, 2)
@@ -64,8 +80,10 @@ def parse_optional_duration(duration_str: Optional[str]) -> Optional[float]:
         if "month" in unit:
             return round(val * 30.0, 2)
         return round(val, 2)
+    except HTTPException:
+        raise
     except Exception:
-        # Fallback to None if not parsable as numeric duration
+        # If unparseable string, return None
         return None
 
 
@@ -91,7 +109,7 @@ async def predict_freshness(
     ),
     temperature: Optional[float] = Form(
         None,
-        description="Optional storage/ambient temperature in Celsius",
+        description="Optional storage/ambient temperature in Celsius (-40°C to 60°C)",
     ),
     storage_condition: Optional[str] = Form(
         None,
@@ -103,19 +121,36 @@ async def predict_freshness(
     ),
     inference_service: InferenceService = Depends(get_inference_service),
 ) -> PredictionResponse:
-    """Predict food freshness from uploaded image and optional metadata."""
-    # Read uploaded file content
+    """Predict food freshness from uploaded image and optional metadata with comprehensive validation."""
+    # 1. Read uploaded file content
     contents = await file.read()
 
-    # Parse optional duration into days
+    # 2. Comprehensive image validation (format, size, magic bytes, PIL decode, executable rejection)
+    validate_image_file(
+        contents=contents,
+        filename=file.filename,
+        content_type=file.content_type,
+    )
+
+    # 3. Category validation (canonicalization to Fruits, Vegetables, Meat, Dairy)
+    canonical_category = validate_category_input(category)
+
+    # 4. Temperature range validation (-40 to 60 C)
+    validated_temp = validate_temperature_input(temperature)
+
+    # 5. Parse optional duration
     duration_days = parse_optional_duration(storage_duration)
 
+    # Clean optional storage condition
+    clean_condition = storage_condition.strip() if storage_condition and storage_condition.strip() else None
+
+    # 6. Execute inference via Member 2's pipeline
     try:
         analysis_result = inference_service.predict(
             image_bytes=contents,
-            category=category,
-            temperature_celsius=temperature,
-            storage_condition=storage_condition,
+            category=canonical_category,
+            temperature_celsius=validated_temp,
+            storage_condition=clean_condition,
             storage_duration_days=duration_days,
         )
     except ModelNotFoundError as exc:
@@ -125,19 +160,19 @@ async def predict_freshness(
             detail=f"Inference model is currently unavailable: {exc}",
         ) from exc
     except (ImageFormatError, ImageSizeError, ImageValidationError, ImageReadError) as exc:
-        logger.warning(f"Image validation failed: {exc}")
+        logger.warning(f"Image processing error: {exc}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Image validation failed: {exc}",
         ) from exc
     except MetadataValidationError as exc:
-        logger.warning(f"Metadata validation failed: {exc}")
+        logger.warning(f"Metadata validation error: {exc}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid food metadata: {exc}",
         ) from exc
     except ModelInferenceError as exc:
-        logger.error(f"Inference failed: {exc}")
+        logger.error(f"Inference execution failed: {exc}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Model inference execution failed: {exc}",
@@ -149,7 +184,7 @@ async def predict_freshness(
             detail=f"Prediction failed due to an unexpected error: {str(exc)}",
         ) from exc
 
-    # Format strictly according to Phase 3 JSON contract
+    # 7. Format response strictly according to Phase 3 JSON contract
     meta_dict = analysis_result.get("metadata") or {}
     metadata_response = FoodMetadataResponse(
         temperature_celsius=meta_dict.get("temperature_celsius"),
