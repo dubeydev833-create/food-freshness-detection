@@ -102,8 +102,8 @@ PALETTE = {
 # Explicit Food Safety Legal / Academic Disclaimer
 FOOD_SAFETY_DISCLAIMER = (
     "⚠️ **Important Food Safety Disclaimer**: FreshCheck AI provides optical classifications "
-    "based strictly on computer vision image analysis. Image-based predictions cannot detect internal bacteria, "
-    "pathogens (e.g., Salmonella, E. coli), chemical toxins, or microbial contamination. Confidence scores reflect "
-    "visual machine learning model certainty, NOT food safety probability. Always inspect smell, texture, storage history, "
-    "and expiration dates before consuming food."
+    "based strictly on computer vision image analysis. Image-based predictions cannot confirm food safety "
+    "or detect internal bacteria, pathogens (e.g., Salmonella, E. coli), chemical toxins, or microbial contamination. "
+    "Confidence scores reflect visual machine learning model certainty, NOT food safety probability. "
+    "Always inspect smell, texture, storage history, and expiration dates before consuming food."
 )
